@@ -6,7 +6,7 @@
 /*   By: Philip <juli@student.42london.com>         +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/01/10 00:10:39 by Philip            #+#    #+#             */
-/*   Updated: 2024/01/10 01:09:31 by Philip           ###   ########.fr       */
+/*   Updated: 2024/01/10 12:56:04 by Philip           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -23,6 +23,7 @@
 int	main(void)
 {
 	pid_t	id;
+	int		rtn;
 
 	printf("Building child process...\n");
 	id = fork();
@@ -47,7 +48,7 @@ int	main(void)
 
 		char *cmd[] = {"ls", "-l", (char *)0};
 		char *env[] = {"HOME=/usr/home", "LOGNAME=home", (char *)0};
-		int rtn = execve("/bin/ls", cmd, env);
+		rtn = execve("/bin/s", cmd, env);
 		// Two cases when execve fails
 		// - target program does not exist, execve then returns -1
 		// - target program fails and returns a value other than 0, 
@@ -62,7 +63,7 @@ int	main(void)
 		wait(&w_status); // Receives the exit code of child process
 		if (WIFEXITED(w_status) == true)
 			status_code = WEXITSTATUS(w_status);
-		if (status_code == 0)
+		if (status_code == 0 && rtn != -1)
 			printf("\nChild process sucess.\n");
 		else
 			printf("Child process exited with code %d.\n", status_code);
