@@ -1,38 +1,16 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   pipex.c                                            :+:      :+:    :+:   */
+/*   bonus.c                                            :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: Philip <juli@student.42london.com>         +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2024/01/10 15:28:54 by Philip            #+#    #+#             */
-/*   Updated: 2024/01/11 22:45:30 by Philip           ###   ########.fr       */
+/*   Created: 2024/01/11 22:54:23 by Philip            #+#    #+#             */
+/*   Updated: 2024/01/11 23:13:55 by Philip           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "pipex.h"
-
-// $ ./pipex infile "ls -l" "wc -l" outfile
-// follows 
-// $ < file1 ls -l | wc -l > file2
-
-// $ ./pipex file1 cmd1 cmd2 cmd3 ... cmdn file2
-// follows
-// $ < file1 cmd1 | cmd2 | cmd3 ... | cmdn > file2
-
-// ./pipex here_doc END cmd cmd1 file
-// follows
-// $ cmd <<END | cmd1 >> file
-
-// PATH=/nfs/homes/juli/bin:/nfs/homes/juli/bin:/usr/local/sbin:/usr/local/bin
-// :/usr/sbin:/usr/bin:/sbin:/bin:/usr/games:/usr/local/games:/snap/bin
-
-void	err_msg(const char *s)
-{
-	write(STDERR_FILENO, s, ft_strlen(s));
-}
-
-
 
 int	main(int argc, char **argv)
 {
@@ -47,7 +25,7 @@ int	main(int argc, char **argv)
 		return (1);
 	}
 
-	/* Check if infile exists-------------------------------------------------*/
+	/* Check if infile exists------------------------------------------------ */
 	int		infile_fd;
 	char	*str;
 
@@ -60,40 +38,31 @@ int	main(int argc, char **argv)
 		return (1);
 	}
 
-	/* Check if first command exists------------------------------------------*/
-	char	*cmd1_bin_path;
-	
-	cmd1 = ft_split(argv[2], ' ');
-	for (int i = 0; cmd1[i]; i++) ft_printf("argv[%d]: %s\n", i, cmd1[i]);
-	ft_printf("Checking if \"%s\" is executable: ", cmd1[0]);
-	cmd1_bin_path = format_string("/usr/bin/%s", cmd1[0]);
-	if (access(cmd1_bin_path, F_OK | X_OK) == 0) //   /usr/bin/grep
+	/* Check if commands exist ------------------------------------------*/
+	// $ ./pipex file1 cmd1 cmd2 cmd3 ... cmdn file2
+	// follows
+	// $ < file1 cmd1 | cmd2 | cmd3 ... | cmdn > file2
+	// number of cmds: argc - 3
+	int	i;
+	char	***cmds;
+	int		cmd_count;
+	// TODO
+	cmd_count = argc - 2;
+	i = 2;
+	while (i < cmd_count)
 	{
-		ft_printf("%s exists and executable\n", cmd1_bin_path);
-	}
-	else
-	{
-		ft_printf("pipex: %s: ", cmd1[0]);
-		perror("");
+		char	*cmd_bin_path;
+		char	**cmd;
+
+		cmd = ft_split(argv[i], ' ');
+		cmd_bin_path = format_string("/usr/bin/%s", cmd[0]);
+		if (access(cmd_bin_path, F_OK | X_OK) == -1)
+		{
+			ft_printf("pipex: %s: ", cmd[0]);
+			perror("");
+		}
 	}
 
-	/* Check if second command exists --------------------------------------- */
-	char	*cmd2_bin_path;
-
-	cmd2 = ft_split(argv[3], ' ');
-	for (int i = 0; cmd2[i]; i++) ft_printf("argv[%d]: %s\n", i, cmd2[i]);
-	ft_printf("Checking if \"%s\" is executable: ", cmd2[0]);
-	cmd2_bin_path = format_string("/usr/bin/%s", cmd2[0]);
-	if (access(cmd2_bin_path, F_OK | X_OK) == 0) //   /usr/bin/grep
-	{
-		ft_printf("%s exists and executable\n", cmd2_bin_path);
-	}
-	else
-	{
-		ft_printf("pipex: %s: ", cmd1[0]);
-		perror("");
-	}
-	
 	/* Pipe between processes ================================================*/
 	int		my_pipe[2];
 
