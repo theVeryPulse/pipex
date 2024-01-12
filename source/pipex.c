@@ -6,7 +6,7 @@
 /*   By: Philip <juli@student.42london.com>         +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/01/10 15:28:54 by Philip            #+#    #+#             */
-/*   Updated: 2024/01/11 22:45:30 by Philip           ###   ########.fr       */
+/*   Updated: 2024/01/12 19:27:32 by Philip           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -31,8 +31,6 @@ void	err_msg(const char *s)
 {
 	write(STDERR_FILENO, s, ft_strlen(s));
 }
-
-
 
 int	main(int argc, char **argv)
 {
@@ -64,14 +62,10 @@ int	main(int argc, char **argv)
 	char	*cmd1_bin_path;
 	
 	cmd1 = ft_split(argv[2], ' ');
-	for (int i = 0; cmd1[i]; i++) ft_printf("argv[%d]: %s\n", i, cmd1[i]);
-	ft_printf("Checking if \"%s\" is executable: ", cmd1[0]);
+	// for (int i = 0; cmd1[i]; i++) ft_printf("argv[%d]: %s\n", i, cmd1[i]);
+	// ft_printf("Checking if \"%s\" is executable: ", cmd1[0]);
 	cmd1_bin_path = format_string("/usr/bin/%s", cmd1[0]);
-	if (access(cmd1_bin_path, F_OK | X_OK) == 0) //   /usr/bin/grep
-	{
-		ft_printf("%s exists and executable\n", cmd1_bin_path);
-	}
-	else
+	if (access(cmd1_bin_path, F_OK | X_OK) == -1) //   /usr/bin/grep
 	{
 		ft_printf("pipex: %s: ", cmd1[0]);
 		perror("");
@@ -81,14 +75,10 @@ int	main(int argc, char **argv)
 	char	*cmd2_bin_path;
 
 	cmd2 = ft_split(argv[3], ' ');
-	for (int i = 0; cmd2[i]; i++) ft_printf("argv[%d]: %s\n", i, cmd2[i]);
-	ft_printf("Checking if \"%s\" is executable: ", cmd2[0]);
+	// for (int i = 0; cmd2[i]; i++) ft_printf("argv[%d]: %s\n", i, cmd2[i]);
+	// ft_printf("Checking if \"%s\" is executable: ", cmd2[0]);
 	cmd2_bin_path = format_string("/usr/bin/%s", cmd2[0]);
-	if (access(cmd2_bin_path, F_OK | X_OK) == 0) //   /usr/bin/grep
-	{
-		ft_printf("%s exists and executable\n", cmd2_bin_path);
-	}
-	else
+	if (access(cmd2_bin_path, F_OK | X_OK) == -1) //   /usr/bin/grep
 	{
 		ft_printf("pipex: %s: ", cmd1[0]);
 		perror("");
@@ -100,9 +90,13 @@ int	main(int argc, char **argv)
 	if (pipe(my_pipe) == -1)
 		return (2);
 
+	char	*env[2];
+
+	env[0] = "PATH=/nfs/homes/juli/bin:/nfs/homes/juli/bin:/usr/local/sbin"
+	":/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin:/usr/games:/usr/local/games"
+	":/snap/bin";
+	env[1] = NULL;
 	/* First command =========================================================*/
-	char	*env1[2];
-	int		result;
 	pid_t	id1;
 
 	id1 = fork();
@@ -111,16 +105,11 @@ int	main(int argc, char **argv)
 	if (id1 == 0)
 	{
 		close(my_pipe[0]);
-		env1[0] = "PATH=/nfs/homes/juli/bin:/nfs/homes/juli/bin:/usr/local/sbin"
-		":/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin:/usr/games:/usr/local/games"
-		":/snap/bin";
-		env1[1] = NULL;
 
-		ft_printf("Executing '%s'...\n", cmd1_bin_path);
+		// ft_printf("Executing '%s'...\n", cmd1_bin_path);
 		dup2(infile_fd , STDIN_FILENO);
 		dup2(my_pipe[1], STDOUT_FILENO);
-		//  int execve(const char *path, char *const argv[], char *const envp[]);
-		if (execve(cmd1_bin_path, cmd1, env1) == -1)
+		if (execve(cmd1_bin_path, cmd1, env) == -1)
 		{
 			return (9);
 			perror("");
@@ -129,8 +118,6 @@ int	main(int argc, char **argv)
 	}
 
 	/* Last command ======================================================= */
-	char	*env2[2];
-	int		result2;
 	pid_t	id2;
 	int		outfile_fd;
 
@@ -140,21 +127,17 @@ int	main(int argc, char **argv)
 	if (id2 == 0)
 	{
 		close(my_pipe[1]);
-		env2[0] = "PATH=/nfs/homes/juli/bin:/nfs/homes/juli/bin:/usr/local/sbin"
-		":/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin:/usr/games:/usr/local/games"
-		":/snap/bin";
-		env2[1] = NULL;
 		outfile_fd =  open(argv[4], O_CREAT | O_WRONLY, 0777);
 		if (outfile_fd == -1)
 			return (3);
-		ft_printf("Executing '%s'...\n", cmd2_bin_path);
+		// ft_printf("Executing '%s'...\n", cmd2_bin_path);
 		dup2(my_pipe[0], STDIN_FILENO);
-		dup2(my_pipe[1], STDOUT_FILENO);
+		dup2(outfile_fd, STDOUT_FILENO);
 		//  int execve(const char *path, char *const argv[], char *const envp[]);
-		if (execve(cmd2_bin_path, cmd2, env2) == -1)
+		if (execve(cmd2_bin_path, cmd2, env) == -1)
 		{
-			return (9);
 			perror("");
+			return (9);
 		}
 		for (int i = 0; cmd2[i]; i++) free(cmd2[i]);
 	}
