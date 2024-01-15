@@ -6,7 +6,7 @@
 /*   By: Philip <juli@student.42london.com>         +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/01/11 22:54:23 by Philip            #+#    #+#             */
-/*   Updated: 2024/01/15 16:29:25 by Philip           ###   ########.fr       */
+/*   Updated: 2024/01/15 18:27:01 by Philip           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -227,7 +227,7 @@ pid_t	exec_last_command(t_cmd *cmds, int *pipes, char *outfile)
 		return (2);
 	if (id_last == 0)
 	{
-		outfile_fd =  open(outfile, O_CREAT | O_WRONLY, 0777);
+		outfile_fd =  open(outfile, O_CREAT | O_WRONLY | O_TRUNC, 0777);
 		if (outfile_fd == -1)
 		{
 			perror("pipex");
@@ -309,29 +309,18 @@ bool	is_delimiter(char *line, char *delimiter)
 
 	if (!line || !delimiter)
 		return (false);
-																				ft_printf("line %d: is_delimiter()\n", __LINE__);
+																				// ft_printf("line %d: is_delimiter()\n", __LINE__);
 	i = 0;
 	while (delimiter[i])
 	{
 		if (line[i] != delimiter[i])
 		{
-																				ft_printf("line %d: PID %d PPID %d: %s is NOT delimiter\n", __LINE__, getpid(), getppid(), line);
+																				// ft_printf("line %d: PID %d PPID %d: %s is NOT delimiter\n", __LINE__, getpid(), getppid(), line);
 			return (false);
 		}
 		i++;
 	}
-	if (line[i] == '\n' && line[i + 1] == '\0')
-	{
-																				ft_printf("line %d: PID %d PPID %d: %s is delimiter\n", __LINE__, getpid(), getppid(), line);
-		return (true);
-	}
-	else
-	{
-																				ft_printf("line %d: PID %d PPID %d: %s is NOT delimiter\n", __LINE__, getpid(), getppid(), line);
-		return (false);
-	}
-
-	// return (line[i] == '\n' && line[i + 1] == '\0');
+	return (line[i] == '\n' && line[i + 1] == '\0');
 }
 
 int	exec_gnl_heredoc(char *delimiter, int *pipes)
@@ -342,37 +331,32 @@ int	exec_gnl_heredoc(char *delimiter, int *pipes)
 	if (!delimiter)
 		exit (1);
 	id = fork();
-																				ft_printf("line %d: PID %d PPID %d fork return %d\n", __LINE__, getpid(), getppid(), id);
+																				// ft_printf("line %d: PID %d PPID %d fork return %d\n", __LINE__, getpid(), getppid(), id);
 	if (id == -1)
 		return (1);
-																				ft_printf("line %d: after forking  PID %d\n", __LINE__, getpid());
+																				// ft_printf("line %d: after forking  PID %d\n", __LINE__, getpid());
 	if (id == 0)
 	{
-/* 		close(pipes[0]);
-		close(pipes[2]);
-		close(pipes[3]); */
-
-																				ft_printf("line %d: PID %d PPID %d: gnl child\n", __LINE__, getpid(), getppid());
+																				// ft_printf("line %d: PID %d PPID %d: gnl child\n", __LINE__, getpid(), getppid());
 		while (1)
 		{
-																				ft_printf("line %d: gnl waiting for new line\n", __LINE__);
+																				// ft_printf("line %d: gnl waiting for new line\n", __LINE__);
 			line = get_next_line(STDIN_FILENO);
-																				ft_printf("line %d: gnl gets >>>>>%s<<<<<\n", __LINE__, line);
+																				// ft_printf("line %d: gnl gets >>>>>%s<<<<<\n", __LINE__, line);
 			if (is_delimiter(line, delimiter))
 				break;
 			if (line)
 			{
 				write(pipes[1], line, ft_strlen(line));
-																				ft_printf("line %d: gnl sends >>>>>(%s)<<<<< to fd %d\n", __LINE__, line, pipes[1]);
+																				// ft_printf("line %d: gnl sends >>>>>(%s)<<<<< to fd %d\n", __LINE__, line, pipes[1]);
 			}
 			free_setnull(1, (void **)&line);
 		}
 		free_setnull(1, (void **)&line);
 		close_all_pipes(pipes);
-																				ft_printf("line %d: PID %d Gnl child ends\n", __LINE__, getpid());
+																				// ft_printf("line %d: PID %d Gnl child ends\n", __LINE__, getpid());
 		exit (0);
 	}
-	close_all_pipes(pipes);
 	return (0);
 }
 
@@ -395,45 +379,48 @@ int	exec_first_command_heredoc(t_cmd *cmds, int *pipes)
 		}
 		return (-1);
 	}
-	close_all_pipes(pipes);
 	return (0);
 }
+
+// "grep 1" "grep 2"
+// "gnl" "grep 1"
 
 pid_t	exec_last_command_heredoc(t_cmd *cmds, int *pipes, char *outfile)
 {
 	int		last_i;
-	pid_t	id_last;
+	pid_t	id;
 	int		outfile_fd;
 
 	last_i = 0;
-	while (cmds[last_i + 1].argv)
+	while (cmds[last_i + 1].argv) // grep grep
 		last_i++;
-	id_last = fork();
-	if (id_last == -1)
+	id = fork();
+	if (id == -1)
 		return (-1);
-	if (id_last == 0)
+	if (id == 0)
 	{
 																				ft_printf("line %d: ", __LINE__); ft_printf("PID %d ", getpid()); ft_printf("last command child\n");
-
-		outfile_fd =  open(outfile, O_CREAT | O_APPEND, 0777);
+		outfile_fd =  open(outfile, O_CREAT | O_WRONLY | O_APPEND, 0777);
 		if (outfile_fd == -1)
 		{
 			perror("pipex");
 			return (127);
 		}
-																				ft_printf("line %d: ", __LINE__); ft_printf("PID %d ", getpid()); ft_printf("last command child, outfile opened\n");
+																				ft_printf("line %d: ", __LINE__); ft_printf("PID %d ", getpid()); ft_printf("last command child, outfile opened: fd (%d)\n", outfile_fd);
 		dup2(outfile_fd, STDOUT_FILENO);
 		close(outfile_fd);
-		dup2(pipes[0 + (last_i - 1) * 2], STDIN_FILENO);
+		// if (dup2(pipes[2], STDIN_FILENO) == -1) perror("Last commad");
+		// dup2(pipes[0 + (last_i - 1) * 2], STDIN_FILENO);
+		dup2(pipes[0 + (last_i) * 2], STDIN_FILENO);
 		close_all_pipes(pipes);
 		if (execve(cmds[last_i].path, cmds[last_i].argv, my_env(GET)) == -1)
 		{
+			ft_printf("line %d: \n", __LINE__);
 			perror(cmds[last_i].argv[0]);
 		}
 		return (9);
 	}
-	close_all_pipes(pipes);
-	return (id_last);
+	return (id);
 }
 
 /**
@@ -463,14 +450,9 @@ int	exec_commands_heredoc(int argc, char **argv)
 	if (!pipes)
 		exit (1);
 																				ft_printf("line %d: ", __LINE__); ft_printf("PID %d ", getpid()); ft_printf("calling gnl child\n");
-	
-	
-	// exec_gnl_heredoc(argv[2], pipes);
-	
-																				ft_printf("line %d: ", __LINE__); ft_printf("PID %d ", getpid()); ft_printf("Waiting for gnl to finish\n");
-	pid_t id_gnl = exec_gnl_heredoc(argv[2], pipes);
-	waitpid(id_gnl, NULL, 0);
-																				ft_printf("line %d: ", __LINE__); ft_printf("PID %d ", getpid()); ft_printf("gnl finished\n");
+	exec_gnl_heredoc(argv[2], pipes);
+																				/* ft_printf("line %d: ", __LINE__); ft_printf("PID %d ", getpid()); ft_printf("Waiting for gnl to finish\n");
+																				ft_printf("line %d: ", __LINE__); ft_printf("PID %d ", getpid()); ft_printf("gnl finished\n"); */
 
 	exec_first_command_heredoc(cmds, pipes);
 	id_last = exec_last_command_heredoc(cmds, pipes, argv[argc - 1]);

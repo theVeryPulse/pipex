@@ -6,7 +6,7 @@
 /*   By: Philip <juli@student.42london.com>         +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/01/10 15:35:38 by Philip            #+#    #+#             */
-/*   Updated: 2024/01/14 16:18:45 by Philip           ###   ########.fr       */
+/*   Updated: 2024/01/15 18:20:53 by Philip           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -29,7 +29,12 @@ typedef struct s_cmd
 {
 	char	**argv;
 	char	*path;
+	bool	is_limiter;
 }	t_cmd;
+
+// limiter set as the first cmd in the array with is_limiter as true;
+// In exec_first_command function, checks if first command is limiter and use 
+// correspoding codes.
 
 typedef enum e_mode
 {
