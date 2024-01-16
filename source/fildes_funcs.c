@@ -6,7 +6,7 @@
 /*   By: Philip <juli@student.42london.com>         +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/01/16 22:23:31 by Philip            #+#    #+#             */
-/*   Updated: 2024/01/16 22:24:31 by Philip           ###   ########.fr       */
+/*   Updated: 2024/01/16 23:11:37 by Philip           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -24,7 +24,6 @@ int	get_input_fd(const char *input_name)
 	if (ft_strncmp(input_name, "here_doc", ft_strlen("here_doc") + 1) == 0)
 	{
 		infile_fd = STDIN_FILENO;
-		ft_printf("here doc mode\n");
 	}
 	else
 	{
