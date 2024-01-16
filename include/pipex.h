@@ -6,7 +6,7 @@
 /*   By: Philip <juli@student.42london.com>         +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/01/10 15:35:38 by Philip            #+#    #+#             */
-/*   Updated: 2024/01/15 18:20:53 by Philip           ###   ########.fr       */
+/*   Updated: 2024/01/16 17:15:57 by Philip           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -29,7 +29,8 @@ typedef struct s_cmd
 {
 	char	**argv;
 	char	*path;
-	bool	is_limiter;
+	char	**envp;
+	bool	is_delimiter;
 }	t_cmd;
 
 // limiter set as the first cmd in the array with is_limiter as true;
