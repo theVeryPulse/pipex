@@ -6,7 +6,7 @@
 /*   By: Philip <juli@student.42london.com>         +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/01/16 22:16:10 by Philip            #+#    #+#             */
-/*   Updated: 2024/01/16 22:25:42 by Philip           ###   ########.fr       */
+/*   Updated: 2024/01/17 16:26:59 by Philip           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -44,8 +44,6 @@ t_cmd	*format_cmds(int argc, char **argv, char **envp)
 /**
  * @brief Checks if all commands exist in /usr/bin, free allocated memory and 
  * exit the program if a command cannot be found.
- * 
- * @return int 
  */
 void	check_cmds(t_cmd *cmds, int cmd_count)
 {

@@ -10,23 +10,18 @@ STATIC_LIBFT := libft/lib/libft.a
 
 CFLAGS := -Wall -Wextra -Werror
 
-FILES := main.c \
-	cmd_funcs.c \
+COMMON_FILES := cmd_funcs.c \
 	exec_funcs_utils.c \
 	exec_funcs.c \
 	fildes_funcs.c \
 	misc.c \
 	pipe_funcs.c
+
+FILES := main.c $(COMMON_FILES)
 SRC := $(addprefix $(SRC_DIR)/, $(FILES))
 OBJ := $(patsubst $(SRC_DIR)/%.c, $(BIN_DIR)/%.o, $(SRC))
 
-FILES_BONUS := main_bonus.c \
-	cmd_funcs.c \
-	exec_funcs_utils.c \
-	exec_funcs.c \
-	fildes_funcs.c \
-	misc.c \
-	pipe_funcs.c
+FILES_BONUS := main_bonus.c $(COMMON_FILES)
 SRC_BONUS := $(addprefix $(SRC_DIR)/, $(FILES_BONUS))
 OBJ_BONUS := $(patsubst $(SRC_DIR)/%.c, $(BIN_DIR)/%.o, $(SRC_BONUS))
 
