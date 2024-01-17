@@ -20,11 +20,24 @@ FILES := main.c \
 SRC := $(addprefix $(SRC_DIR)/, $(FILES))
 OBJ := $(patsubst $(SRC_DIR)/%.c, $(BIN_DIR)/%.o, $(SRC))
 
+FILES_BONUS := main_bonus.c \
+	cmd_funcs.c \
+	exec_funcs_utils.c \
+	exec_funcs.c \
+	fildes_funcs.c \
+	misc.c \
+	pipe_funcs.c
+SRC_BONUS := $(addprefix $(SRC_DIR)/, $(FILES_BONUS))
+OBJ_BONUS := $(patsubst $(SRC_DIR)/%.c, $(BIN_DIR)/%.o, $(SRC_BONUS))
+
 .SILENT:
 
 all: $(NAME)
 
-$(NAME): $(STATIC_LIBFT) $(OBJ)
+rmbonus:
+	rm -f bonus
+
+$(NAME): $(STATIC_LIBFT) $(OBJ) rmbonus
 	$(CC) $(OBJ) -o $@ $(CFLAGS) -I $(INC_DIR) -I $(LIBFT_INC_DIR) $(STATIC_LIBFT)
 	echo "pipex done"
 
@@ -39,13 +52,16 @@ clean:
 	rm -f ./bin/*.o
 	$(MAKE) -C libft clean
 
-fclean: clean
+fclean: clean rmbonus
 	rm -f $(NAME)
 	$(MAKE) -C libft fclean
 
 re: fclean all
 
-bonus: $(NAME)
+bonus: $(STATIC_LIBFT) $(OBJ_BONUS)
+	@touch bonus
+	$(CC) $(OBJ_BONUS) -o $(NAME) $(CFLAGS) -I $(INC_DIR) -I $(LIBFT_INC_DIR) $(STATIC_LIBFT)
+	@echo "pipex bonus done"
 
-.PHONY: all, clean, fclean, re, bonus
+.PHONY: all, clean, fclean, re, rmbonus
 

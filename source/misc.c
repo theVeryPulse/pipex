@@ -6,7 +6,7 @@
 /*   By: Philip <juli@student.42london.com>         +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/01/16 22:21:33 by Philip            #+#    #+#             */
-/*   Updated: 2024/01/16 22:28:48 by Philip           ###   ########.fr       */
+/*   Updated: 2024/01/17 15:01:01 by Philip           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -55,12 +55,12 @@ bool	is_delimiter(char *line, char *delimiter)
 
 bool	not_enough_args(int argc, char **argv)
 {
-	if (ft_strncmp(argv[1], "here_doc", ft_strlen("here_doc") + 1) == 0
-		&& argc < 6)
+	if (argc < 5)
 	{
 		return (true);
 	}
-	if (argc < 5)
+	if (ft_strncmp(argv[1], "here_doc", ft_strlen("here_doc") + 1) == 0
+		&& argc < 6)
 	{
 		return (true);
 	}
