@@ -6,7 +6,7 @@
 /*   By: Philip <juli@student.42london.com>         +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/01/16 22:16:10 by Philip            #+#    #+#             */
-/*   Updated: 2024/01/17 16:26:59 by Philip           ###   ########.fr       */
+/*   Updated: 2024/02/17 18:46:14 by Philip           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -31,7 +31,7 @@ t_cmd	*format_cmds(int argc, char **argv, char **envp)
 	while (i < cmd_count)
 	{
 		cmds[i].argv = ft_split(cmd_start[i], ' ');
-		cmds[i].path = format_string("/usr/bin/%s", cmds[i].argv[0]);
+		cmds[i].path = ft_format_string("/usr/bin/%s", cmds[i].argv[0]);
 		cmds[i].envp = envp;
 		cmds[i].is_delimiter = false;
 		i++;
