@@ -65,7 +65,7 @@ acts as if<br>
 `< infile cmd1 | cmd2 | ... | cmdn > outfile`
 
 - Heredoc and append:<br>
-`./pipex heredoc END cmd1 | cmd2 | ... | cmdn outfile`<br>
+`./pipex heredoc END cmd1 cmd2 ... cmdn outfile`<br>
 acts as if<br>
 `<< END cmd1 | cmd2 | ... | cmdn >> outfile`
 
