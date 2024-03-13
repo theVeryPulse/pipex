@@ -1,6 +1,6 @@
-# pipex
+# Pipex - A Linux pipe stimulation
 
-**pipex** is a simple implementation of the `|` pipe redirection in Unix-like operating systems, written in C. This project is inspired by the `pipe()` system call and aims to provide a basic understanding of how processes communicate and how shell commands involving pipes are executed internally.
+**Pipex** is a simple implementation of the `|` pipe redirection in Unix-like operating systems, written in C. This project is inspired by the `pipe()` system call and aims to provide a basic understanding of how processes communicate and how shell commands involving pipes are executed internally.
 
 ## Table of Contents
 
